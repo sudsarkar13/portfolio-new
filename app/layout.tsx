@@ -4,6 +4,8 @@ import "./globals.css";
 import Header from "@/components/navigation/Header";
 import PageTransition from "@/components/page/PageTransition";
 import StairTransition from "@/components/page/StairTransition";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 
 const jetBrainsMono = JetBrains_Mono({
 	subsets: ["latin"],
@@ -26,6 +28,8 @@ export default function RootLayout({
 			<body
 				className={`${jetBrainsMono.variable} antialiased`}
 				suppressHydrationWarning>
+				<SpeedInsights />
+				<Analytics />
 				<Header />
 				<StairTransition />
 				<PageTransition>{children}</PageTransition>
