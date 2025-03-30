@@ -99,12 +99,12 @@ const experience = {
 		{
 			company: "Healthunity Solutions Pvt Ltd",
 			position: "CTO",
-			duration: "Jun 2024 - Present",
+			duration: "Oct 2024 - Present",
 		},
 		{
 			company: "Healthunity Solutions Pvt Ltd",
 			position: "Frontend Developer",
-			duration: "Mar 2024 - May 2024",
+			duration: "Mar 2024 - Sept 2024",
 		},
 		{
 			company: "ProU Education",
