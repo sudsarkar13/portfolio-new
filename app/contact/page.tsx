@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Button, Input, Textarea } from "@/components/ui";
 import {
 	Select,
@@ -34,6 +34,59 @@ const info = [
 ];
 
 const ContactPage: React.FC = () => {
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [formStatus, setFormStatus] = useState<"idle" | "success" | "error">(
+		"idle"
+	);
+	const [formData, setFormData] = useState({
+		firstName: "",
+		lastName: "",
+		email: "",
+		phone: "",
+		service: "",
+		message: "",
+	});
+
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+		setIsSubmitting(true);
+
+		try {
+			const response = await fetch("/api/contact", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(formData),
+			});
+
+			if (!response.ok) throw new Error("Failed to send message");
+
+			setFormStatus("success");
+			setFormData({
+				firstName: "",
+				lastName: "",
+				email: "",
+				phone: "",
+				service: "",
+				message: "",
+			});
+		} catch (error) {
+			setFormStatus("error");
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
+
+	const handleChange = (
+		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+	) => {
+		setFormData((prev) => ({
+			...prev,
+			[e.target.name]: e.target.value,
+		}));
+	};
+
 	return (
 		<motion.section
 			initial={{ opacity: 0 }}
@@ -47,6 +100,7 @@ const ContactPage: React.FC = () => {
 					{/* form */}
 					<div className={`xl:w-[54%] order-2 xl:order-none`}>
 						<form
+							onSubmit={handleSubmit}
 							className={`flex flex-col gap-6 p-10 bg-[#27272c] rounded-xl`}>
 							<h3 className={`text-4xl text-accent`}>Let's Talk</h3>
 							<p className={`text-white/60`}>
@@ -59,41 +113,82 @@ const ContactPage: React.FC = () => {
 							</p>
 							{/* input */}
 							<div className={`grid grid-cols-1 md:grid-cols-2 gap-6`}>
-								<Input type="firstname" placeholder="First Name" />
-								<Input type="lastname" placeholder="Last Name" />
-								<Input type="email" placeholder="Email Address" />
-								<Input type="phone" placeholder="Phone Number" />
+								<Input
+									name="firstName"
+									value={formData.firstName}
+									onChange={handleChange}
+									type="text"
+									placeholder="First Name"
+								/>
+								<Input
+									name="lastName"
+									value={formData.lastName}
+									onChange={handleChange}
+									type="text"
+									placeholder="Last Name"
+								/>
+								<Input
+									name="email"
+									value={formData.email}
+									onChange={handleChange}
+									type="email"
+									placeholder="Email Address"
+								/>
+								<Input
+									name="phone"
+									value={formData.phone}
+									onChange={handleChange}
+									type="phone"
+									placeholder="Phone Number"
+								/>
 							</div>
-							{/* select */}
-							<Select>
+							{/* select option*/}
+							<Select onValueChange={(value) => setFormData(prev => ({ ...prev, service: value }))}>
 								<SelectTrigger className={`w-full `}>
 									<SelectValue placeholder={`Select a service`} />
 								</SelectTrigger>
 								<SelectContent>
 									<SelectGroup>
 										<SelectLabel>Select a service</SelectLabel>
-										<SelectItem value="web-development">
+										<SelectItem value="Web Development">
 											Web Development
 										</SelectItem>
-										<SelectItem value="uiux-design">UI/UX Design</SelectItem>
-										<SelectItem value="android-app-development">
+										<SelectItem value="UI/UX Design">UI/UX Design</SelectItem>
+										<SelectItem value="Android App Development">
 											Android App Development
 										</SelectItem>
-										<SelectItem value="seo">SEO</SelectItem>
+										<SelectItem value="SEO">SEO</SelectItem>
 									</SelectGroup>
 								</SelectContent>
 							</Select>
 							{/* textarea */}
 							<Textarea
+								name="message"
+								value={formData.message}
+								onChange={handleChange}
 								placeholder="Type your message here."
 								className={`h-[200px]`}
 							/>
 							{/* button */}
 							<div className={`flex justify-center`}>
-								<Button size={`md`} type="submit" className={`max-w-40`}>
-									Send message
+								<Button
+									size={`md`}
+									type="submit"
+									className={`max-w-40`}
+									disabled={isSubmitting}>
+									{isSubmitting ? "Sending..." : "Send message"}
 								</Button>
 							</div>
+							{formStatus === "success" && (
+								<p className="text-green-500 text-center">
+									Message sent successfully!
+								</p>
+							)}
+							{formStatus === "error" && (
+								<p className="text-red-500 text-center">
+									Failed to send message. Please try again.
+								</p>
+							)}
 						</form>
 					</div>
 					{/* info */}
