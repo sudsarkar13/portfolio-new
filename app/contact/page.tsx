@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { Toaster, toast } from "react-hot-toast";
 
 const info = [
 	{
@@ -71,8 +72,10 @@ const ContactPage: React.FC = () => {
 				service: "",
 				message: "",
 			});
+			toast.success("Message sent successfully!");
 		} catch (error) {
 			setFormStatus("error");
+			toast.error("Failed to send message. Please try again.");
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -95,6 +98,7 @@ const ContactPage: React.FC = () => {
 				transition: { delay: 2.4, duration: 0.4, ease: "easeIn" },
 			}}
 			className={`py-6`}>
+			<Toaster position="bottom-right" />
 			<div className={`container mx-auto`}>
 				<div className={`flex flex-col xl:flex-row gap-[30px]`}>
 					{/* form */}
@@ -179,16 +183,6 @@ const ContactPage: React.FC = () => {
 									{isSubmitting ? "Sending..." : "Send message"}
 								</Button>
 							</div>
-							{formStatus === "success" && (
-								<p className="text-green-500 text-center">
-									Message sent successfully!
-								</p>
-							)}
-							{formStatus === "error" && (
-								<p className="text-red-500 text-center">
-									Failed to send message. Please try again.
-								</p>
-							)}
 						</form>
 					</div>
 					{/* info */}
