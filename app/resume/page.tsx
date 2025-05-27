@@ -76,7 +76,7 @@ const about = {
 		},
 		{
 			fieldName: "Designation:",
-			fieldValue: "Tech Specialist",
+			fieldValue: "Tech Specialist Intern",
 		},
 		{
 			fieldName: "Nationality:",
@@ -102,7 +102,7 @@ const experience = {
 	items: [
 		{
 			company: "Lex Protector LLP",
-			position: "Tech Specialist",
+			position: "Tech Specialist Intern",
 			duration: "Jun 2025 - Present",
 		},
 		{
