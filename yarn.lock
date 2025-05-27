@@ -839,12 +839,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/eslint-plugin-next@npm:15.4.0-canary.51":
-  version: 15.4.0-canary.51
-  resolution: "@next/eslint-plugin-next@npm:15.4.0-canary.51"
+"@next/eslint-plugin-next@npm:15.4.0-canary.53":
+  version: 15.4.0-canary.53
+  resolution: "@next/eslint-plugin-next@npm:15.4.0-canary.53"
   dependencies:
     fast-glob: "npm:3.3.1"
-  checksum: 10c0/15657d9b2d7a91bd88d7640cfa84ffcae8d5644db2e82e5948efe973dbfd5ee802a2f9a1e912099d4b327736e516187da1ba3cda863a04d305417ebc424a4d41
+  checksum: 10c0/648095b57374595a9de0e031c9bc87d3004642400db9ec2f4b84985feadc0be980727ea4fe5066322d9cd97e2c02dfdc801229c1a6e01e3a2e140abfae95b317
   languageName: node
   linkType: hard
 
@@ -4094,11 +4094,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-next@npm:15.4.0-canary.51":
-  version: 15.4.0-canary.51
-  resolution: "eslint-config-next@npm:15.4.0-canary.51"
+"eslint-config-next@npm:15.4.0-canary.53":
+  version: 15.4.0-canary.53
+  resolution: "eslint-config-next@npm:15.4.0-canary.53"
   dependencies:
-    "@next/eslint-plugin-next": "npm:15.4.0-canary.51"
+    "@next/eslint-plugin-next": "npm:15.4.0-canary.53"
     "@rushstack/eslint-patch": "npm:^1.10.3"
     "@typescript-eslint/eslint-plugin": "npm:^5.4.2 || ^6.0.0 || ^7.0.0 || ^8.0.0"
     "@typescript-eslint/parser": "npm:^5.4.2 || ^6.0.0 || ^7.0.0 || ^8.0.0"
@@ -4114,7 +4114,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/c8b44f557a105a71441f94497016e5942dafcf5bacdc75f430b25970b95b6d2b873a6960ce9b3b0fae5190ddaf7f5d5654a7ebd0f6d67531ad6bd23b6d9b648a
+  checksum: 10c0/a1d0fb851ed7fac4963d90782d92a2abfd0d2a1f8653b7d1025504ada5775ab093975d3cc421859f661335812cf3fd9c1ad8d94df8b17dd83becd3f29d10d8af
   languageName: node
   linkType: hard
 
@@ -6687,7 +6687,7 @@ __metadata:
     date-fns: "npm:^3.6.0"
     embla-carousel-react: "npm:^8.6.0"
     eslint: "npm:^8.57.1"
-    eslint-config-next: "npm:15.4.0-canary.51"
+    eslint-config-next: "npm:15.4.0-canary.53"
     framer-motion: "npm:^11.18.2"
     git-commit-count: "npm:^1.1.3"
     input-otp: "npm:^1.4.2"
