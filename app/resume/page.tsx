@@ -15,32 +15,36 @@ import {
 } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-// Automate Experience Year/Month Increment function.
-const startDate = new Date(2024, 3); // March 2024
-const currentDate = new Date();
+interface Experience {
+	value: number;
+	unit: "Years" | "Months";
+}
 
-// Calculates years and months of experience
-// Returns formatted string like "2+ Years 3 Months" or "5 Months"
+const calculateExperience = (): Experience => {
+	const startDate = new Date(2024, 3); // April 2024 (month is 0-based)
+	const currentDate = new Date();
 
-const calculateExperience = () => {
-	const years = currentDate.getFullYear() - startDate.getFullYear();
-	const months = currentDate.getMonth() - startDate.getMonth();
+	const diffInMonths =
+		(currentDate.getFullYear() - startDate.getFullYear()) * 12 +
+		(currentDate.getMonth() - startDate.getMonth()) +
+		(currentDate.getDate() - startDate.getDate()) / 30;
 
-	let totalMonths = years * 12 + months;
-	if (totalMonths < 0) totalMonths += 12;
+	if (diffInMonths < 0) return { value: 0, unit: "Months" };
 
-	// If less than 12 months, show only months
-	if (totalMonths < 12) {
-		return `${totalMonths} Months`;
+	// Convert to years with 1 decimal place
+	const years = +(diffInMonths / 12).toFixed(1);
+
+	if (years < 1) {
+		return {
+			value: Math.max(0, Math.round(diffInMonths)),
+			unit: "Months",
+		};
 	}
 
-	// If 12 months or more, show years and months
-	const experienceYears = Math.floor(totalMonths / 12);
-	const experienceMonths = totalMonths % 12;
-
-	return `${experienceYears}+ Years${
-		experienceMonths > 0 ? ` ${experienceMonths} Months` : ""
-	}`;
+	return {
+		value: years,
+		unit: "Years",
+	};
 };
 
 // About data
@@ -68,11 +72,11 @@ const about = {
 		},
 		{
 			fieldName: "Company:",
-			fieldValue: "Healthunity Solutions Pvt Ltd",
+			fieldValue: "Lex Protector LLP",
 		},
 		{
 			fieldName: "Designation:",
-			fieldValue: "CTO",
+			fieldValue: "Tech Specialist",
 		},
 		{
 			fieldName: "Nationality:",
@@ -97,9 +101,14 @@ const experience = {
 		"My professional journey spans diverse roles in software development, from hands-on system engineering to technical leadership. I bring a blend of technical expertise and strategic thinking to deliver innovative solutions that drive business growth.",
 	items: [
 		{
+			company: "Lex Protector LLP",
+			position: "Tech Specialist",
+			duration: "Jun 2025 - Present",
+		},
+		{
 			company: "Healthunity Solutions Pvt Ltd",
 			position: "CTO",
-			duration: "Oct 2024 - Present",
+			duration: "Oct 2024 - May 2025",
 		},
 		{
 			company: "Healthunity Solutions Pvt Ltd",
@@ -239,7 +248,10 @@ const ResumePage: React.FC = () => {
 														{item.fieldName}
 													</span>
 													<span className={`text-md leading-snug`}>
-														{item.fieldValue}
+														{typeof item.fieldValue === "object" &&
+														"value" in item.fieldValue
+															? `${item.fieldValue.value}+ ${item.fieldValue.unit}`
+															: item.fieldValue}
 													</span>
 												</li>
 											);
