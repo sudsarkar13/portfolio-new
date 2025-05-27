@@ -76,7 +76,7 @@ const Photo: React.FC = () => {
 						<Image
 							src={"/assets/images/Sudeepta.png"}
 							alt="Sudeepta Sarkar"
-							priority
+							priority={true}
 							quality={100}
 							fill
 							className={`object-contain rounded-full backdrop:blur-xl`}
