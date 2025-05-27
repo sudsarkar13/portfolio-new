@@ -77,8 +77,9 @@ const Photo: React.FC = () => {
 							src={"/assets/images/Sudeepta.png"}
 							alt="Sudeepta Sarkar"
 							priority={true}
-							quality={100}
+							quality={85}
 							fill
+							loading="eager"
 							className={`object-contain rounded-full backdrop:blur-xl`}
 						/>
 					</motion.div>

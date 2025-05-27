@@ -47,6 +47,45 @@ const calculateExperience = (): Experience => {
 	};
 };
 
+// Calculates years and months of experience
+// Returns formatted string like "2+ Years 3 Months" or "5 Months"
+const calculateLexProtectorExperience = () => {
+	// Automate Experience Year/Month Increment function.
+	const startDate = new Date(2025, 6); // June 2025 (month is 0-based)
+	const currentDate = new Date();
+
+	// Calculate total months difference
+	const years = currentDate.getFullYear() - startDate.getFullYear();
+	const months = currentDate.getMonth() - startDate.getMonth();
+	const totalMonths = years * 12 + months;
+
+	// If start date is in the future
+	if (totalMonths < 0) {
+		return "0 Months";
+	}
+
+	// If in the same month, check days
+	if (totalMonths === 0) {
+		const daysDiff = currentDate.getDate() - startDate.getDate();
+		if (daysDiff < 0) {
+			return "0 Months";
+		}
+	}
+
+	// If less than 12 months, show only months
+	if (totalMonths < 12) {
+		return `${totalMonths} Months`;
+	}
+
+	// If 12 months or more, show years and months
+	const experienceYears = Math.floor(totalMonths / 12);
+	const experienceMonths = totalMonths % 12;
+
+	return `${experienceYears}+ Years${
+		experienceMonths > 0 ? ` ${experienceMonths} Months` : ""
+	}`;
+};
+
 // About data
 const about = {
 	icon: <User className={`w-10 h-10`} />,
@@ -104,16 +143,19 @@ const experience = {
 			company: "Lex Protector LLP",
 			position: "Tech Specialist Intern",
 			duration: "Jun 2025 - Present",
+			experience: `Joining 02/06/2025 - ${calculateLexProtectorExperience()}`,
 		},
 		{
 			company: "Healthunity Solutions Pvt Ltd",
-			position: "CTO",
+			position: "Chief Technology Officer",
 			duration: "Oct 2024 - May 2025",
+			experience: "Contd. 01/10/2024 - 26/05/2025",
 		},
 		{
 			company: "Healthunity Solutions Pvt Ltd",
 			position: "Frontend Developer",
 			duration: "Mar 2024 - Sept 2024",
+			experience: "Joined 01/03/2024 - 30/09/2024",
 		},
 		{
 			company: "ProU Education",
@@ -328,6 +370,7 @@ const ResumePage: React.FC = () => {
 															className={`text-xl max-w-[260px] min-h-[60px] text-center lg:text-left`}>
 															{item.position}
 														</h3>
+														<p>{item.experience}</p>
 														<div className={`flex items-center gap-3`}>
 															{/* dot */}
 															<span
