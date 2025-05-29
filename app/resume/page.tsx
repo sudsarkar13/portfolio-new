@@ -141,31 +141,45 @@ const experience = {
 	items: [
 		{
 			company: "Lex Protector LLP",
-			position: "Tech Specialist Intern",
+			position: "Tech Specialist",
+			jobType: "Internship",
 			duration: "Jun 2025 - Present",
 			experience: `Joining 02/06/2025 - ${calculateLexProtectorExperience()}`,
 		},
 		{
 			company: "Healthunity Solutions Pvt Ltd",
 			position: "Chief Technology Officer",
+			jobType: "Full-time",
 			duration: "Oct 2024 - May 2025",
-			experience: "Contd. 01/10/2024 - 26/05/2025",
+			experience: "Contd. 01/10/2024 - 29/05/2025",
 		},
 		{
 			company: "Healthunity Solutions Pvt Ltd",
-			position: "Frontend Developer",
-			duration: "Mar 2024 - Sept 2024",
-			experience: "Joined 01/03/2024 - 30/09/2024",
+			position: "Frontend Developer & UI/UX Lead",
+			jobType: "Trainee",
+			duration: "Jun 2024 - Sept 2024",
+			experience: "Contd. 01/06/2024 - 30/09/2024",
+		},
+		{
+			company: "Healthunity Solutions Pvt Ltd",
+			position: "Frontend Web Developer",
+			jobType: "Internship",
+			duration: "Mar 2024 - May 2024",
+			experience: "Joined 01/03/2024 - 31/05/2024",
 		},
 		{
 			company: "ProU Education",
 			position: "Campus Ambassador, KIIT University",
+			jobType: "Internship",
 			duration: "Apr 2023 - Nov 2023",
+			experience: "N/A",
 		},
 		{
-			company: "Freelance",
+			company: "Individual",
 			position: "System Engineer",
+			jobType: "Freelance",
 			duration: "May 2018 - Apr 2023",
+			experience: "01/05/2018 - 31/04/2023",
 		},
 	],
 };
@@ -362,7 +376,7 @@ const ResumePage: React.FC = () => {
 												return (
 													<li
 														key={index}
-														className={`bg-[#232329] h-[184px] py-6 px-6 rounded-xl flex flex-col justify-center items-center lg:items-start gap-1`}>
+														className={`bg-[#232329] h-[220px] py-6 px-6 rounded-xl flex flex-col justify-center items-center lg:items-start gap-1`}>
 														<span className={`text-accent`}>
 															{item.duration}
 														</span>
@@ -370,6 +384,10 @@ const ResumePage: React.FC = () => {
 															className={`text-xl max-w-[260px] min-h-[60px] text-center lg:text-left`}>
 															{item.position}
 														</h3>
+														<p className={`font-bold`}>
+															Job Type:{" "}
+															<span>{item.jobType}</span>
+														</p>
 														<p>{item.experience}</p>
 														<div className={`flex items-center gap-3`}>
 															{/* dot */}
