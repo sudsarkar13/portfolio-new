@@ -73,6 +73,10 @@ const ContactPage: React.FC = () => {
 				message: "",
 			});
 			toast.success("Message sent successfully!");
+			// Reload the page after showing the success toast
+			setTimeout(() => {
+				window.location.reload();
+			}, 1500); // Wait for 1.5 seconds so the user can see the success message
 		} catch (error) {
 			setFormStatus("error");
 			toast.error("Failed to send message. Please try again.");
@@ -147,7 +151,10 @@ const ContactPage: React.FC = () => {
 								/>
 							</div>
 							{/* select option*/}
-							<Select onValueChange={(value) => setFormData(prev => ({ ...prev, service: value }))}>
+							<Select
+								onValueChange={(value) =>
+									setFormData((prev) => ({ ...prev, service: value }))
+								}>
 								<SelectTrigger className={`w-full `}>
 									<SelectValue placeholder={`Select a service`} />
 								</SelectTrigger>
