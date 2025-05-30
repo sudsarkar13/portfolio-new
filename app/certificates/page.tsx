@@ -50,12 +50,13 @@ const certificates = [
 	{
 		num: "04",
 		category: "MUN",
-		title: "Certificate of Participation KIIT International e-Model United Nations",
-    presentedBy: "KIIT International MUN",
+		title:
+			"Certificate of Participation KIIT International e-Model United Nations",
+		presentedBy: "KIIT International MUN",
 		description: "Issued Jan 2022",
 		skill: [{ name: "Delegate" }, { name: "Management Committee" }],
-		image: "/assets/projects/p3.png",
-		link: "https://dreach.in",
+		image: "/assets/certificates/c4.png",
+		link: "https://www.dropbox.com/s/rw35l5ctr030xgm/KIIT%20International%20e-Model%20United%20Nations%20Certificate-Sudeepta%20Sarkar.pdf?dl=0",
 	},
 	{
 		num: "05",
