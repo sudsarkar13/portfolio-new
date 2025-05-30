@@ -15,7 +15,7 @@ import Link from "next/link";
 import Image from "next/image";
 import WorkSliderBtns from "@/components/buttons/WorkSliderBtns";
 
-const certificates = [
+export const certificates = [
 	{
 		num: "01",
 		category: "Information Technology",

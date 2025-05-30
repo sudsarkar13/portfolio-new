@@ -5,6 +5,7 @@ import CountUp from "react-countup";
 import { getGithubStats } from "@/utils/github";
 import { motion } from "framer-motion";
 import { username } from "@/utils/github";
+import { certificates } from "@/app/certificates/page";
 
 // Types
 interface GithubStats {
@@ -104,6 +105,11 @@ const Stats: React.FC = () => {
 		{
 			num: 5,
 			text: "Technologies Hands On Experience",
+		},
+		{
+			num: certificates.length,
+			text: "Certifications",
+			showPlus: true,
 		},
 		{
 			num: githubStats.commitCount,
