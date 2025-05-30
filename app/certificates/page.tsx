@@ -327,6 +327,7 @@ const CertificatesPage: React.FC = () => {
 												<Image
 													src={certificate.image}
 													alt={certificate.title}
+													priority={true}
 													fill
 													className={`object-contain`}
 												/>
