@@ -109,7 +109,7 @@ const certificates = [
 	{
 		num: "09",
 		category: "Information Technology",
-		title: "lnstagram Clone using HTML & CSS",
+		title: "Instagram Clone using HTML & CSS",
 		issuedBy: "Microsoft Learn Student Ambassadors, KIIT Chapter, devtown",
 		description: "Issued on Mar 2023 Credential ID ZqCJji",
 		skill: [{ name: "HTML" }, { name: "CSS" }],
@@ -119,7 +119,7 @@ const certificates = [
 	{
 		num: "10",
 		category: "Information Technology",
-		title: "lnstagram Clone using HTML & CSS",
+		title: "Instagram Clone using HTML & CSS",
 		issuedBy: "GDSC, KIIT Chapter, devtown",
 		description: "Issued on Mar 2023 Credential ID ZMsqfF",
 		skill: [{ name: "HTML" }, { name: "CSS" }],
