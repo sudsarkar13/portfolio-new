@@ -5,7 +5,7 @@ import CountUp from "react-countup";
 import { getGithubStats } from "@/utils/github";
 import { motion } from "framer-motion";
 import { username } from "@/utils/github";
-import { certificates } from "@/app/certificates/page";
+import { certificates } from "@/data/certificates";
 
 // Types
 interface GithubStats {
