@@ -536,3 +536,620 @@ const useSharedAuth = () => {
 **Decision**: The subdomain approach is recommended for its balance of separation, scalability, and maintainability while providing a professional blog platform that can grow independently.
 
 **Next Action**: Setup blog repository and begin Phase 0 implementation.
+
+## 🔍 Advanced Search & Discovery System
+
+### Context Search Box
+
+**Concept**: Implement a powerful, context-aware search system that allows users to easily find relevant content across blogs, documentation, and articles.
+
+### Search Features
+
+#### 1. **Global Search Bar**
+
+- **Instant Search**: Real-time search results as user types
+- **Search Suggestions**: Auto-complete based on popular searches
+- **Search History**: Recently searched terms for quick access
+- **Voice Search**: Voice-to-text search input
+- **Keyboard Shortcuts**: Quick access via keyboard (Ctrl+K, Cmd+K)
+
+#### 2. **Advanced Filter System**
+
+```typescript
+// Search Filter Interface
+interface SearchFilters {
+ category: string[]; // Tech, Tutorial, Review, Personal, etc.
+ tags: string[]; // JavaScript, React, AI, etc.
+ contentType: string[]; // Blog, Documentation, Article, Guide
+ dateRange: {
+  from: Date;
+  to: Date;
+ };
+ author: string[]; // Multi-author support
+ readingTime: {
+  min: number; // Minimum reading time
+  max: number; // Maximum reading time
+ };
+ difficulty: string[]; // Beginner, Intermediate, Advanced
+ isPremium: boolean; // Premium/Free content filter
+ language: string[]; // Programming languages
+ sortBy: "relevance" | "date" | "popularity" | "reading_time";
+ sortOrder: "asc" | "desc";
+}
+```
+
+#### 3. **Smart Search Categories**
+
+```typescript
+// Search Categories
+const SEARCH_CATEGORIES = {
+ BLOG_POSTS: {
+  name: "Blog Posts",
+  icon: "📝",
+  searchFields: ["title", "content", "excerpt", "tags"],
+  filters: ["category", "tags", "date", "readingTime"],
+ },
+ DOCUMENTATION: {
+  name: "Documentation",
+  icon: "📚",
+  searchFields: ["title", "content", "headings", "code_blocks"],
+  filters: ["technology", "difficulty", "version"],
+ },
+ TUTORIALS: {
+  name: "Tutorials",
+  icon: "🎓",
+  searchFields: ["title", "content", "steps", "examples"],
+  filters: ["difficulty", "duration", "tools"],
+ },
+ CODE_SNIPPETS: {
+  name: "Code Snippets",
+  icon: "💻",
+  searchFields: ["title", "code", "description", "language"],
+  filters: ["language", "framework", "useCase"],
+ },
+ PROJECTS: {
+  name: "Projects",
+  icon: "🚀",
+  searchFields: ["title", "description", "technologies", "readme"],
+  filters: ["technology", "complexity", "status"],
+ },
+};
+```
+
+### Search UI Components
+
+#### 1. **Search Bar Component**
+
+```typescript
+// Advanced Search Bar
+const SearchBar = () => {
+ const [query, setQuery] = useState("");
+ const [isOpen, setIsOpen] = useState(false);
+ const [filters, setFilters] = useState<SearchFilters>({});
+ const [suggestions, setSuggestions] = useState([]);
+
+ return (
+  <div className="relative w-full max-w-4xl mx-auto">
+   <div className="relative">
+    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+    <input
+     type="text"
+     placeholder="Search blogs, docs, tutorials... (Ctrl+K)"
+     className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+     value={query}
+     onChange={(e) => setQuery(e.target.value)}
+     onFocus={() => setIsOpen(true)}
+    />
+    <button className="absolute right-3 top-3 text-gray-400 hover:text-gray-600">
+     <Filter className="h-4 w-4" />
+    </button>
+   </div>
+
+   {isOpen && (
+    <SearchDropdown
+     query={query}
+     filters={filters}
+     suggestions={suggestions}
+     onClose={() => setIsOpen(false)}
+    />
+   )}
+  </div>
+ );
+};
+```
+
+#### 2. **Filter Panel Component**
+
+```typescript
+// Advanced Filter Panel
+const FilterPanel = ({ filters, onFiltersChange }) => {
+ return (
+  <div className="bg-white p-6 rounded-lg shadow-lg">
+   <h3 className="text-lg font-semibold mb-4">Filters</h3>
+
+   {/* Category Filter */}
+   <FilterSection title="Category">
+    <CheckboxGroup
+     options={["Technology", "Tutorial", "Review", "Personal", "News"]}
+     selected={filters.category}
+     onChange={(category) => onFiltersChange({ ...filters, category })}
+    />
+   </FilterSection>
+
+   {/* Date Range Filter */}
+   <FilterSection title="Date Range">
+    <DateRangePicker
+     from={filters.dateRange?.from}
+     to={filters.dateRange?.to}
+     onChange={(dateRange) => onFiltersChange({ ...filters, dateRange })}
+    />
+   </FilterSection>
+
+   {/* Content Type Filter */}
+   <FilterSection title="Content Type">
+    <RadioGroup
+     options={["All", "Blog", "Documentation", "Tutorial", "Guide"]}
+     selected={filters.contentType}
+     onChange={(contentType) =>
+      onFiltersChange({ ...filters, contentType })
+     }
+    />
+   </FilterSection>
+
+   {/* Reading Time Filter */}
+   <FilterSection title="Reading Time">
+    <RangeSlider
+     min={0}
+     max={30}
+     value={[
+      filters.readingTime?.min || 0,
+      filters.readingTime?.max || 30,
+     ]}
+     onChange={(readingTime) =>
+      onFiltersChange({ ...filters, readingTime })
+     }
+    />
+   </FilterSection>
+
+   {/* Technology Tags */}
+   <FilterSection title="Technologies">
+    <TagSelector
+     tags={["JavaScript", "React", "Node.js", "Python", "AI", "DevOps"]}
+     selected={filters.tags}
+     onChange={(tags) => onFiltersChange({ ...filters, tags })}
+    />
+   </FilterSection>
+  </div>
+ );
+};
+```
+
+#### 3. **Search Results Component**
+
+```typescript
+// Search Results with Highlighting
+const SearchResults = ({ results, query, filters }) => {
+ return (
+  <div className="space-y-4">
+   <div className="flex items-center justify-between">
+    <p className="text-sm text-gray-600">
+     Found {results.length} results for "{query}"
+    </p>
+    <SortDropdown
+     value={filters.sortBy}
+     onChange={(sortBy) => onFiltersChange({ ...filters, sortBy })}
+    />
+   </div>
+
+   {results.map((result) => (
+    <SearchResultCard
+     key={result.id}
+     result={result}
+     query={query}
+     onClick={() => navigateToContent(result)}
+    />
+   ))}
+  </div>
+ );
+};
+
+// Individual Search Result Card
+const SearchResultCard = ({ result, query }) => {
+ return (
+  <div className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+   <div className="flex items-start justify-between">
+    <div className="flex-1">
+     <div className="flex items-center gap-2 mb-2">
+      <span className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">
+       {result.type}
+      </span>
+      <span className="text-sm text-gray-500">
+       {result.readingTime} min read
+      </span>
+      <span className="text-sm text-gray-500">{result.publishDate}</span>
+     </div>
+
+     <h3 className="text-lg font-semibold mb-2">
+      <HighlightedText text={result.title} highlight={query} />
+     </h3>
+
+     <p className="text-gray-600 mb-3">
+      <HighlightedText text={result.excerpt} highlight={query} />
+     </p>
+
+     <div className="flex items-center gap-2 mb-2">
+      {result.tags.map((tag) => (
+       <span
+        key={tag}
+        className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
+        {tag}
+       </span>
+      ))}
+     </div>
+    </div>
+
+    {result.featuredImage && (
+     <img
+      src={result.featuredImage}
+      alt={result.title}
+      className="w-20 h-20 object-cover rounded ml-4"
+     />
+    )}
+   </div>
+  </div>
+ );
+};
+```
+
+### Search Backend Implementation
+
+#### 1. **Search API Endpoint**
+
+```typescript
+// /api/search/route.ts
+export async function GET(request: Request) {
+ const { searchParams } = new URL(request.url);
+ const query = searchParams.get("q") || "";
+ const filters = JSON.parse(searchParams.get("filters") || "{}");
+ const page = parseInt(searchParams.get("page") || "1");
+ const limit = parseInt(searchParams.get("limit") || "10");
+
+ try {
+  // Perform search with multiple strategies
+  const results = await performSearch(query, filters, page, limit);
+
+  return Response.json({
+   results: results.items,
+   total: results.total,
+   page,
+   totalPages: Math.ceil(results.total / limit),
+   facets: results.facets, // For filter counts
+   suggestions: results.suggestions,
+  });
+ } catch (error) {
+  return Response.json({ error: "Search failed" }, { status: 500 });
+ }
+}
+
+// Search Implementation
+async function performSearch(
+ query: string,
+ filters: SearchFilters,
+ page: number,
+ limit: number
+) {
+ // Multi-strategy search
+ const strategies = [
+  exactMatchSearch(query),
+  fuzzySearch(query),
+  semanticSearch(query),
+  tagBasedSearch(query),
+ ];
+
+ const results = await Promise.all(strategies);
+ const combinedResults = combineAndRankResults(results);
+
+ // Apply filters
+ const filteredResults = applyFilters(combinedResults, filters);
+
+ // Pagination
+ const paginatedResults = paginate(filteredResults, page, limit);
+
+ return {
+  items: paginatedResults,
+  total: filteredResults.length,
+  facets: generateFacets(filteredResults),
+  suggestions: generateSuggestions(query),
+ };
+}
+```
+
+#### 2. **Search Indexing System**
+
+```typescript
+// Search Index Builder
+interface SearchIndex {
+ id: string;
+ title: string;
+ content: string;
+ excerpt: string;
+ tags: string[];
+ category: string;
+ author: string;
+ publishDate: Date;
+ readingTime: number;
+ isPremium: boolean;
+ difficulty: string;
+ language: string[];
+ searchableText: string; // Combined searchable content
+ embeddings?: number[]; // For semantic search
+}
+
+// Build search index
+export async function buildSearchIndex() {
+ const posts = await getAllBlogPosts();
+ const docs = await getAllDocumentation();
+ const tutorials = await getAllTutorials();
+
+ const indexItems: SearchIndex[] = [];
+
+ // Index blog posts
+ posts.forEach((post) => {
+  indexItems.push({
+   id: post.id,
+   title: post.title,
+   content: post.content,
+   excerpt: post.excerpt,
+   tags: post.tags,
+   category: post.category,
+   author: post.author,
+   publishDate: post.publishDate,
+   readingTime: post.readingTime,
+   isPremium: post.isPremium,
+   difficulty: post.difficulty,
+   language: extractLanguages(post.content),
+   searchableText: `${post.title} ${post.content} ${post.tags.join(" ")}`,
+   embeddings: generateEmbeddings(post.content),
+  });
+ });
+
+ // Store in search database (ElasticSearch, Algolia, or custom)
+ await storeSearchIndex(indexItems);
+}
+```
+
+### Search Enhancement Features
+
+#### 1. **Autocomplete & Suggestions**
+
+```typescript
+// Search Suggestions API
+export async function GET(request: Request) {
+ const { searchParams } = new URL(request.url);
+ const query = searchParams.get("q") || "";
+
+ const suggestions = await Promise.all([
+  getTitleSuggestions(query),
+  getTagSuggestions(query),
+  getContentSuggestions(query),
+  getPopularSearches(query),
+ ]);
+
+ return Response.json({
+  suggestions: suggestions.flat().slice(0, 10),
+ });
+}
+
+// Suggestion Types
+interface SearchSuggestion {
+ text: string;
+ type: "title" | "tag" | "content" | "popular";
+ count?: number;
+ category?: string;
+}
+```
+
+#### 2. **Search Analytics**
+
+```typescript
+// Search Analytics
+interface SearchAnalytics {
+ query: string;
+ timestamp: Date;
+ userId?: string;
+ resultsCount: number;
+ clickedResult?: string;
+ filters: SearchFilters;
+ source: "header" | "page" | "mobile";
+}
+
+// Track search behavior
+export async function trackSearch(analytics: SearchAnalytics) {
+ await saveSearchAnalytics(analytics);
+
+ // Update popular searches
+ await updatePopularSearches(analytics.query);
+
+ // Update search suggestions
+ await updateSearchSuggestions(analytics.query);
+}
+```
+
+### Mobile Search Experience
+
+#### 1. **Mobile Search Interface**
+
+```typescript
+// Mobile-optimized Search
+const MobileSearch = () => {
+ const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+ return (
+  <div className="md:hidden">
+   <button
+    onClick={() => setIsSearchOpen(true)}
+    className="p-2 rounded-full bg-gray-100">
+    <Search className="h-5 w-5" />
+   </button>
+
+   {isSearchOpen && (
+    <div className="fixed inset-0 bg-white z-50">
+     <div className="p-4">
+      <div className="flex items-center gap-2 mb-4">
+       <button onClick={() => setIsSearchOpen(false)} className="p-2">
+        <ArrowLeft className="h-5 w-5" />
+       </button>
+       <input
+        type="text"
+        placeholder="Search..."
+        className="flex-1 p-2 border rounded-lg"
+        autoFocus
+       />
+      </div>
+
+      <QuickFilters />
+      <RecentSearches />
+      <PopularSearches />
+     </div>
+    </div>
+   )}
+  </div>
+ );
+};
+```
+
+### Search Performance Optimization
+
+#### 1. **Caching Strategy**
+
+```typescript
+// Search Result Caching
+const searchCache = new Map<string, SearchResults>();
+
+export async function getCachedSearchResults(
+ query: string,
+ filters: SearchFilters
+) {
+ const cacheKey = generateCacheKey(query, filters);
+
+ if (searchCache.has(cacheKey)) {
+  return searchCache.get(cacheKey);
+ }
+
+ const results = await performSearch(query, filters);
+ searchCache.set(cacheKey, results);
+
+ // Cache expiration
+ setTimeout(() => {
+  searchCache.delete(cacheKey);
+ }, 300000); // 5 minutes
+
+ return results;
+}
+```
+
+#### 2. **Search Database Options**
+
+```typescript
+// Search Database Configurations
+const SEARCH_PROVIDERS = {
+ ELASTICSEARCH: {
+  name: "Elasticsearch",
+  features: ["Full-text search", "Faceted search", "Analytics"],
+  cost: "Free tier available",
+  setup: "Self-hosted or cloud",
+ },
+ ALGOLIA: {
+  name: "Algolia",
+  features: ["Instant search", "Typo tolerance", "Analytics"],
+  cost: "Free tier: 10k searches/month",
+  setup: "Hosted service",
+ },
+ TYPESENSE: {
+  name: "Typesense",
+  features: ["Typo tolerance", "Faceted search", "Geo search"],
+  cost: "Open source",
+  setup: "Self-hosted",
+ },
+ CUSTOM_SQLITE: {
+  name: "SQLite FTS",
+  features: ["Full-text search", "Lightweight", "Offline capable"],
+  cost: "Free",
+  setup: "Built-in",
+ },
+};
+```
+
+### Advanced Search Features
+
+#### 1. **Semantic Search**
+
+```typescript
+// AI-Powered Semantic Search
+export async function semanticSearch(query: string) {
+ // Generate embeddings for search query
+ const queryEmbedding = await generateEmbeddings(query);
+
+ // Find similar content using vector similarity
+ const results = await findSimilarContent(queryEmbedding);
+
+ return results.map((result) => ({
+  ...result,
+  relevanceScore: calculateRelevanceScore(queryEmbedding, result.embeddings),
+ }));
+}
+```
+
+#### 2. **Search Personalization**
+
+```typescript
+// Personalized Search Results
+export async function getPersonalizedResults(query: string, userId: string) {
+ const userPreferences = await getUserPreferences(userId);
+ const searchHistory = await getUserSearchHistory(userId);
+
+ // Boost results based on user preferences
+ const results = await performSearch(query);
+
+ return results
+  .map((result) => ({
+   ...result,
+   personalizedScore: calculatePersonalizedScore(
+    result,
+    userPreferences,
+    searchHistory
+   ),
+  }))
+  .sort((a, b) => b.personalizedScore - a.personalizedScore);
+}
+```
+
+## 🔍 Search Implementation Phases
+
+### Phase 1: Basic Search (Week 1-2)
+
+- [ ] Implement basic search bar
+- [ ] Add simple text-based search
+- [ ] Create search results page
+- [ ] Add basic filters (category, date)
+
+### Phase 2: Advanced Filtering (Week 3-4)
+
+- [ ] Implement comprehensive filter system
+- [ ] Add date range picker
+- [ ] Create tag-based filtering
+- [ ] Add content type filters
+
+### Phase 3: Enhanced UX (Week 5-6)
+
+- [ ] Add search suggestions and autocomplete
+- [ ] Implement search history
+- [ ] Create mobile search interface
+- [ ] Add keyboard shortcuts
+
+### Phase 4: Smart Features (Week 7-8)
+
+- [ ] Implement semantic search
+- [ ] Add search analytics
+- [ ] Create personalized results
+- [ ] Add voice search capability
