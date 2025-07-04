@@ -41,6 +41,8 @@ app/
 │   │       └── page.tsx        # Blog editing page
 │   ├── dashboard/
 │   │   └── page.tsx            # Blog management dashboard
+│   ├── search/
+│   │   └── page.tsx            # Advanced search page
 │   └── premium/
 │       └── page.tsx            # Premium content page
 ├── api/
@@ -50,6 +52,12 @@ app/
 │   │   │   └── route.ts        # Individual blog operations
 │   │   └── ai-assist/
 │   │       └── route.ts        # AI content generation
+│   ├── search/
+│   │   ├── route.ts            # Search API endpoint
+│   │   ├── suggestions/
+│   │   │   └── route.ts        # Search suggestions
+│   │   └── filters/
+│   │       └── route.ts        # Filter options
 │   ├── subscription/
 │   │   └── route.ts            # Subscription management
 │   └── payment/
@@ -70,6 +78,16 @@ components/
 │   ├── BlogEditor.tsx          # Markdown editor
 │   ├── BlogDashboard.tsx       # Management dashboard
 │   └── BlogSearch.tsx          # Search functionality
+├── search/
+│   ├── SearchBox.tsx           # Global search input
+│   ├── AdvancedSearch.tsx      # Advanced search form
+│   ├── SearchResults.tsx       # Search results display
+│   ├── SearchFilters.tsx       # Filter components
+│   ├── SearchSuggestions.tsx   # Auto-complete suggestions
+│   ├── DateRangeFilter.tsx     # Date range picker
+│   ├── CategoryFilter.tsx      # Category selection
+│   ├── TagFilter.tsx           # Tag-based filtering
+│   └── SearchHistory.tsx       # User search history
 ├── editors/
 │   ├── MarkdownEditor.tsx      # Rich markdown editor
 │   ├── AIAssistant.tsx         # AI writing assistant
@@ -99,6 +117,12 @@ components/
   - `@uiw/react-md-editor` - Rich markdown editor
   - `react-markdown` - Markdown rendering
   - `remark` & `rehype` plugins for enhanced features
+- **Search & Filtering**:
+  - `fuse.js` - Fuzzy search for content
+  - `lunr.js` - Full-text search indexing
+  - `date-fns` - Date manipulation and filtering
+  - `react-select` - Multi-select filters
+  - `react-datepicker` - Date range selection
 - **AI Integration**:
   - OpenAI GPT API (free tier)
   - Google Gemini API (free tier)
@@ -202,26 +226,76 @@ CREATE TABLE blog_analytics (
 );
 ```
 
+### Search Analytics Table
+
+```sql
+CREATE TABLE search_analytics (
+  id UUID PRIMARY KEY,
+  search_query TEXT NOT NULL,
+  search_type ENUM('basic', 'advanced', 'filter') DEFAULT 'basic',
+  filters_applied JSONB,
+  results_count INTEGER DEFAULT 0,
+  clicked_result_id UUID,
+  user_id UUID,
+  ip_address VARCHAR(45),
+  user_agent TEXT,
+  search_date TIMESTAMP DEFAULT NOW()
+);
+```
+
+### Search Index Table
+
+```sql
+CREATE TABLE search_index (
+  id UUID PRIMARY KEY,
+  blog_id UUID NOT NULL,
+  title_tokens TEXT[],
+  content_tokens TEXT[],
+  tags TEXT[],
+  categories TEXT[],
+  search_vector TSVECTOR,
+  last_indexed TIMESTAMP DEFAULT NOW(),
+  FOREIGN KEY (blog_id) REFERENCES blog_posts(id)
+);
+```
+
 ## 🎨 UI/UX Design
 
 ### Blog Listing Page
 
 - Grid/List view toggle
-- Category filtering
-- Search functionality
+- **Advanced Search & Filtering**:
+  - Global search box with auto-complete
+  - Context-aware search suggestions
+  - Category filtering with multi-select
+  - Date range filtering (last week, month, year, custom)
+  - Tag-based filtering
+  - Content type filtering (blogs, documentation, articles)
+  - Author filtering
+  - Reading time filtering
+  - Popularity/trending filters
+- Search result highlighting
 - Premium content indicators
-- Pagination
+- Pagination with infinite scroll option
 - Featured posts section
+- Recently searched queries
+- Search history for logged-in users
 
 ### Blog Post Page
 
 - Clean reading layout
+- **Enhanced Search Integration**:
+  - In-page search functionality
+  - Related content suggestions
+  - Contextual search within current article
+  - "Find similar articles" feature
 - Table of contents
 - Reading progress indicator
 - Social sharing buttons
 - Comments section (optional)
-- Related posts
+- Related posts (search-driven)
 - Premium content paywall
+- Search-based content recommendations
 
 ### Blog Editor
 
@@ -236,18 +310,328 @@ CREATE TABLE blog_analytics (
 ### Dashboard
 
 - Analytics overview
+- **Search Analytics Dashboard**:
+  - Top search queries
+  - Search performance metrics
+  - Filter usage statistics
+  - Search conversion rates
+  - Popular content discovery paths
 - Content management
 - Subscription metrics
 - Revenue tracking
 - User engagement stats
+- Search-driven content insights
 
-## 🔧 Implementation Phases
+## � Advanced Search & Discovery System
+
+### Search Architecture
+
+```javascript
+// Search Configuration
+const SEARCH_CONFIG = {
+ ENGINES: {
+  FUZZY: "fuse.js", // Fuzzy search for typos
+  FULLTEXT: "lunr.js", // Full-text search
+  SEMANTIC: "ai-powered", // AI-powered semantic search
+ },
+ FILTERS: {
+  CATEGORIES: ["Tech", "Tutorial", "Review", "Documentation"],
+  CONTENT_TYPES: ["Blog", "Article", "Documentation", "Guide"],
+  DATE_RANGES: ["Last Week", "Last Month", "Last Year", "Custom"],
+  READING_TIME: ["< 5 min", "5-10 min", "10-20 min", "20+ min"],
+  DIFFICULTY: ["Beginner", "Intermediate", "Advanced"],
+ },
+ SORTING: ["Relevance", "Date", "Popular", "Reading Time"],
+};
+```
+
+### Search Features
+
+#### 1. Global Search Box
+
+- **Auto-complete**: Real-time suggestions as user types
+- **Context-aware**: Search suggestions based on current page/category
+- **Voice search**: Speech-to-text search input
+- **Search history**: Recent searches for logged-in users
+- **Keyboard shortcuts**: Quick search with Ctrl+K or Cmd+K
+
+#### 2. Advanced Filtering System
+
+```javascript
+const FILTER_OPTIONS = {
+ categories: {
+  type: "multi-select",
+  options: ["Frontend", "Backend", "DevOps", "AI/ML", "Mobile"],
+  searchable: true,
+ },
+ dateRange: {
+  type: "date-picker",
+  presets: ["Last 7 days", "Last month", "Last year"],
+  customRange: true,
+ },
+ contentType: {
+  type: "checkbox",
+  options: ["Blog Posts", "Tutorials", "Documentation", "Code Snippets"],
+ },
+ readingTime: {
+  type: "range-slider",
+  min: 1,
+  max: 30,
+  unit: "minutes",
+ },
+ author: {
+  type: "select",
+  options: ["All Authors", "Sudeepta Sarkar", "Guest Authors"],
+ },
+ tags: {
+  type: "tag-input",
+  searchable: true,
+  popular: ["React", "Next.js", "TypeScript", "Node.js"],
+ },
+};
+```
+
+#### 3. Search Results Display
+
+- **Relevance scoring**: AI-powered relevance ranking
+- **Result highlighting**: Search term highlighting in titles and snippets
+- **Result preview**: Expandable content preview
+- **Quick actions**: Save, share, bookmark from results
+- **Load more**: Infinite scroll or pagination
+- **Export results**: Save search results as PDF or share link
+
+#### 4. Smart Search Suggestions
+
+```javascript
+const SEARCH_SUGGESTIONS = {
+ trending: {
+  title: "Trending Searches",
+  queries: ["React hooks", "Next.js 15", "TypeScript tips"],
+ },
+ recent: {
+  title: "Your Recent Searches",
+  queries: [], // User-specific
+ },
+ related: {
+  title: "Related to Your Interests",
+  queries: [], // AI-generated based on user behavior
+ },
+ popular: {
+  title: "Popular This Week",
+  queries: [], // Based on site analytics
+ },
+};
+```
+
+### Search API Endpoints
+
+#### 1. Search API
+
+```typescript
+// GET /api/search
+interface SearchRequest {
+ query: string;
+ filters?: {
+  categories?: string[];
+  dateRange?: { from: Date; to: Date };
+  contentType?: string[];
+  readingTime?: { min: number; max: number };
+  tags?: string[];
+  author?: string;
+ };
+ sort?: "relevance" | "date" | "popular" | "reading-time";
+ page?: number;
+ limit?: number;
+}
+
+interface SearchResponse {
+ results: BlogPost[];
+ totalCount: number;
+ facets: {
+  categories: { name: string; count: number }[];
+  tags: { name: string; count: number }[];
+  authors: { name: string; count: number }[];
+ };
+ suggestions: string[];
+ searchTime: number;
+}
+```
+
+#### 2. Search Suggestions API
+
+```typescript
+// GET /api/search/suggestions
+interface SuggestionsRequest {
+ query: string;
+ limit?: number;
+}
+
+interface SuggestionsResponse {
+ suggestions: {
+  text: string;
+  type: "query" | "category" | "tag" | "author";
+  count?: number;
+ }[];
+}
+```
+
+#### 3. Search Analytics API
+
+```typescript
+// POST /api/search/analytics
+interface SearchAnalyticsRequest {
+ query: string;
+ filters: any;
+ resultsCount: number;
+ clickedResult?: string;
+ searchType: "basic" | "advanced" | "filter";
+}
+```
+
+### Search Components Implementation
+
+#### 1. SearchBox Component
+
+```typescript
+interface SearchBoxProps {
+ placeholder?: string;
+ showSuggestions?: boolean;
+ onSearch: (query: string) => void;
+ className?: string;
+}
+
+const SearchBox: React.FC<SearchBoxProps> = ({
+ placeholder = "Search blogs, articles, documentation...",
+ showSuggestions = true,
+ onSearch,
+ className,
+}) => {
+ // Implementation with auto-complete, keyboard navigation
+ // Voice search, search history
+};
+```
+
+#### 2. SearchFilters Component
+
+```typescript
+interface SearchFiltersProps {
+ filters: FilterState;
+ onFilterChange: (filters: FilterState) => void;
+ availableFilters: FilterOptions;
+ collapsed?: boolean;
+}
+
+const SearchFilters: React.FC<SearchFiltersProps> = ({
+ filters,
+ onFilterChange,
+ availableFilters,
+ collapsed = false,
+}) => {
+ // Implementation with collapsible sections
+ // Clear filters, filter presets, saved searches
+};
+```
+
+#### 3. SearchResults Component
+
+```typescript
+interface SearchResultsProps {
+ results: BlogPost[];
+ query: string;
+ totalCount: number;
+ loading?: boolean;
+ onLoadMore?: () => void;
+}
+
+const SearchResults: React.FC<SearchResultsProps> = ({
+ results,
+ query,
+ totalCount,
+ loading = false,
+ onLoadMore,
+}) => {
+ // Implementation with result highlighting
+ // Infinite scroll, result actions
+};
+```
+
+### Search Performance Optimization
+
+#### 1. Indexing Strategy
+
+- **Full-text indexing**: Index title, content, tags, categories
+- **Incremental indexing**: Update index only for changed content
+- **Search analytics**: Track search performance and optimize
+- **Caching**: Cache popular search results
+
+#### 2. Search Performance Metrics
+
+```javascript
+const SEARCH_METRICS = {
+ responseTime: "< 100ms for cached results",
+ indexSize: "Optimized for fast retrieval",
+ accuracy: "95%+ relevant results in top 10",
+ coverage: "100% of published content indexed",
+};
+```
+
+### Mobile Search Experience
+
+#### 1. Mobile-Optimized Search
+
+- **Touch-friendly**: Large search input and filter buttons
+- **Swipe gestures**: Swipe to apply/remove filters
+- **Voice search**: Mobile voice input integration
+- **Offline search**: Cache recent searches for offline access
+
+#### 2. Progressive Web App Features
+
+- **Search shortcuts**: Add search to home screen
+- **Push notifications**: Notify about new content matching saved searches
+- **Background sync**: Sync search history across devices
+
+### Search Analytics Dashboard
+
+#### 1. Search Metrics
+
+- **Popular queries**: Most searched terms
+- **Zero-result queries**: Searches with no results
+- **Click-through rates**: Search result click rates
+- **Search success rate**: Percentage of successful searches
+
+#### 2. Content Discovery Insights
+
+- **Content gaps**: What users search for but don't find
+- **Trending topics**: Emerging search trends
+- **User search patterns**: How users navigate through search
+- **Content recommendations**: What to write next based on search data
+
+### Accessibility & User Experience
+
+#### 1. Accessibility Features
+
+- **Keyboard navigation**: Full keyboard support
+- **Screen reader support**: ARIA labels and descriptions
+- **High contrast mode**: Accessible color schemes
+- **Focus indicators**: Clear focus states
+
+#### 2. User Experience Enhancements
+
+- **Search shortcuts**: Quick access to common searches
+- **Search templates**: Pre-built search queries
+- **Saved searches**: Bookmark frequent searches
+- **Search alerts**: Notify when new content matches criteria
+
+## �🔧 Implementation Phases
 
 ### Phase 1: Basic Blog System (Week 1-2)
 
 - [ ] Create basic blog listing page
 - [ ] Implement blog post display
 - [ ] Add markdown editor
+- [ ] **Implement basic search functionality**
+- [ ] **Create search box component**
+- [ ] **Add basic filtering (category, tags)**
 - [ ] Set up Google Sheets integration
 - [ ] Create basic CRUD operations
 
@@ -257,6 +641,10 @@ CREATE TABLE blog_analytics (
 - [ ] Implement blog creation/editing
 - [ ] Add image upload functionality
 - [ ] Create category/tag system
+- [ ] **Implement advanced search features**
+- [ ] **Add date range filtering**
+- [ ] **Create search suggestions system**
+- [ ] **Implement search analytics tracking**
 - [ ] Implement SEO optimization
 
 ### Phase 3: Premium Features (Week 5-6)
@@ -271,12 +659,18 @@ CREATE TABLE blog_analytics (
 
 - [ ] Integrate AI writing assistant
 - [ ] Add content generation features
+- [ ] **Implement AI-powered search recommendations**
+- [ ] **Create smart content discovery**
+- [ ] **Add semantic search capabilities**
 - [ ] Implement SEO suggestions
 - [ ] Create content optimization tools
 
 ### Phase 5: Analytics & Monetization (Week 9-10)
 
 - [ ] Implement analytics tracking
+- [ ] **Build comprehensive search analytics**
+- [ ] **Create search performance dashboard**
+- [ ] **Implement search-driven content recommendations**
 - [ ] Add donation functionality
 - [ ] Create revenue dashboard
 - [ ] Optimize for performance
@@ -351,9 +745,12 @@ const SUBSCRIPTION_PLANS = {
 ### Key Metrics
 
 - **Content Metrics**: Views, engagement, reading time
+- **Search Metrics**: Search queries, click-through rates, search success rate
+- **Filter Usage**: Most used filters, filter combinations, search patterns
+- **Discovery Metrics**: Content discoverability, search-driven traffic
 - **Subscription Metrics**: Conversion rates, churn rate, LTV
 - **Revenue Metrics**: Monthly recurring revenue, donation amounts
-- **User Metrics**: Active users, retention rate
+- **User Metrics**: Active users, retention rate, search behavior
 
 ### Tools Integration
 
