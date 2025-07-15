@@ -51,39 +51,67 @@ const calculateExperience = (): Experience => {
 // Returns formatted string like "2+ Years 3 Months" or "5 Months"
 const calculateLexProtectorExperience = () => {
 	// Automate Experience Year/Month Increment function.
-	const startDate = new Date(2025, 6); // June 2025 (month is 0-based)
+	const startDate = new Date(2025, 6, 1); // June 2, 2025 (month is 0-based)
 	const currentDate = new Date();
 
-	// Calculate total months difference
-	const years = currentDate.getFullYear() - startDate.getFullYear();
-	const months = currentDate.getMonth() - startDate.getMonth();
-	const totalMonths = years * 12 + months;
+	// Calculate difference in milliseconds
+	const diffTime = currentDate.getTime() - startDate.getTime();
 
 	// If start date is in the future
-	if (totalMonths < 0) {
-		return "0 Months";
+	if (diffTime < 0) {
+		return "0 Days";
 	}
 
-	// If in the same month, check days
-	if (totalMonths === 0) {
-		const daysDiff = currentDate.getDate() - startDate.getDate();
-		if (daysDiff < 0) {
-			return "0 Months";
-		}
+	// Calculate total months more accurately
+	let totalMonths = (currentDate.getFullYear() - startDate.getFullYear()) * 12;
+	totalMonths += currentDate.getMonth() - startDate.getMonth();
+
+	// Calculate days
+	let days = currentDate.getDate() - startDate.getDate();
+
+	// Adjust for day differences
+	if (days < 0) {
+		totalMonths--;
+		// Get days in previous month
+		const prevMonth = new Date(
+			currentDate.getFullYear(),
+			currentDate.getMonth(),
+			0
+		);
+		days += prevMonth.getDate();
 	}
 
-	// If less than 12 months, show only months
-	if (totalMonths < 12) {
-		return `${totalMonths} Months`;
+	// Ensure we don't have negative months
+	totalMonths = Math.max(0, totalMonths);
+
+	// Format the result
+	let result = "";
+
+	// Add years if any
+	if (totalMonths >= 12) {
+		const experienceYears = Math.floor(totalMonths / 12);
+		result += `${experienceYears}+ Year${experienceYears !== 1 ? "s" : ""}`;
 	}
 
-	// If 12 months or more, show years and months
-	const experienceYears = Math.floor(totalMonths / 12);
+	// Add months if any
 	const experienceMonths = totalMonths % 12;
+	if (experienceMonths > 0) {
+		if (result) result += " ";
+		result += `${experienceMonths} Month${experienceMonths !== 1 ? "s" : ""}`;
+	}
 
-	return `${experienceYears}+ Years${
-		experienceMonths > 0 ? ` ${experienceMonths} Months` : ""
-	}`;
+	// Add days if any
+	if (days > 0) {
+		if (result) result += " ";
+		result += `${days} Day${days !== 1 ? "s" : ""}`;
+	}
+
+	// If no time has passed, show 0 days
+	if (!result) {
+		result = "0 Days";
+	}
+
+	return result;
 };
 
 // About data
@@ -106,7 +134,7 @@ const about = {
 			fieldValue: "+91 7504614781",
 		},
 		{
-			fieldName: "Experience:",
+			fieldName: "Professional Experience:",
 			fieldValue: calculateExperience(),
 		},
 		{
@@ -142,9 +170,16 @@ const experience = {
 		{
 			company: "Lex Protector LLP",
 			position: "Tech Specialist",
+			jobType: "Trainee",
+			duration: "Jul 2025 - Present",
+			experience: `01/07/2025 - ${calculateLexProtectorExperience()}`,
+		},
+		{
+			company: "Lex Protector LLP",
+			position: "Tech Specialist",
 			jobType: "Internship",
-			duration: "Jun 2025 - Present",
-			experience: `Joining 02/06/2025 - ${calculateLexProtectorExperience()}`,
+			duration: "Jun 2025 - Jul 2025",
+			experience: `Joined 02/06/2025 - 30/06/2025`,
 		},
 		{
 			company: "Healthunity Solutions Pvt Ltd",
@@ -376,7 +411,7 @@ const ResumePage: React.FC = () => {
 												return (
 													<li
 														key={index}
-														className={`bg-[#232329] h-[220px] py-6 px-6 rounded-xl flex flex-col justify-center items-center lg:items-start gap-1`}>
+														className={`bg-[#232329] h-[250px] py-6 px-6 rounded-xl flex flex-col justify-center items-center lg:items-start gap-1`}>
 														<span className={`text-accent`}>
 															{item.duration}
 														</span>
@@ -385,8 +420,7 @@ const ResumePage: React.FC = () => {
 															{item.position}
 														</h3>
 														<p className={`font-bold`}>
-															Job Type:{" "}
-															<span>{item.jobType}</span>
+															Job Type: <span>{item.jobType}</span>
 														</p>
 														<p>{item.experience}</p>
 														<div className={`flex items-center gap-3`}>
