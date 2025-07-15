@@ -411,7 +411,7 @@ const ResumePage: React.FC = () => {
 												return (
 													<li
 														key={index}
-														className={`bg-[#232329] h-[250px] py-6 px-6 rounded-xl flex flex-col justify-center items-center lg:items-start gap-1`}>
+														className={`bg-[#232329] h-[220px] py-6 px-6 rounded-xl flex flex-col justify-center items-center lg:items-start gap-1`}>
 														<span className={`text-accent`}>
 															{item.duration}
 														</span>
