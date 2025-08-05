@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/navigation/Header";
+import { Footer } from "@/components/footer";
 import PageTransition from "@/components/page/PageTransition";
 import StairTransition from "@/components/page/StairTransition";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -33,6 +34,7 @@ export default function RootLayout({
 				<Header />
 				<StairTransition />
 				<PageTransition>{children}</PageTransition>
+				<Footer />
 			</body>
 		</html>
 	);
