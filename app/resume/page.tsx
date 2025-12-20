@@ -49,9 +49,9 @@ const calculateExperience = (): Experience => {
 
 // Calculates years and months of experience
 // Returns formatted string like "2+ Years 3 Months" or "5 Months"
-const calculateLexProtectorExperience = () => {
+const calculateJobExperience = () => {
 	// Automate Experience Year/Month Increment function.
-	const startDate = new Date(2025, 6, 1); // June 2, 2025 (month is 0-based)
+	const startDate = new Date(2025, 11, 1); // November 1, 2025 (month is 0-based)
 	const currentDate = new Date();
 
 	// Calculate difference in milliseconds
@@ -143,7 +143,7 @@ const about = {
 		},
 		{
 			fieldName: "Designation:",
-			fieldValue: "Tech Specialist Intern",
+			fieldValue: "Software Developer",
 		},
 		{
 			fieldName: "Nationality:",
@@ -169,10 +169,17 @@ const experience = {
 	items: [
 		{
 			company: "Lex Protector LLP",
+			position: "Software Developer",
+			jobType: "Full-time",
+			duration: "Nov 2025 - Present",
+			experience: `01/11/2025 - ${calculateJobExperience()}`,
+		},
+		{
+			company: "Lex Protector LLP",
 			position: "Tech Specialist",
 			jobType: "Trainee",
-			duration: "Jul 2025 - Present",
-			experience: `01/07/2025 - ${calculateLexProtectorExperience()}`,
+			duration: "Jul 2025 - Sep 2025",
+			experience: `01/07/2025 - 31/10/2025`,
 		},
 		{
 			company: "Lex Protector LLP",

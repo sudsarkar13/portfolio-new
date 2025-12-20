@@ -65,6 +65,58 @@ const projects = [
 		live: "https://sudeeptasarkar.in",
 		github: "https://github.com/sudsarkar13/personal-portfolio",
 	},
+	{
+		num: "05",
+		category: "Frontend",
+		title: "Lex Protector Partner Portal",
+		description:
+			"Transform your IP lawyer & boutique law firm with the only white-label platform that turns 2-hour manual research into 2-minute professional quotes. Select countries, choose services, and generate multi-country quotes with detailed schedules and commission calculations.",
+		stack: [{ name: "Next.js" }, { name: "Shadcn" }, { name: "Tailwind CSS" }],
+		image: "/assets/projects/p6.png",
+		live: "https://partners.lexprotector.com",
+		github: "",
+	},
+	{
+		num: "06",
+		category: "Full stack",
+		title: "PatentProtector.ai",
+		description:
+			"Revolutionary AI-powered platform that transforms your invention ideas into professional provisional patents through intelligent conversation and automated drafting.",
+		stack: [
+			{ name: "React.js" },
+			{ name: "Shadcn" },
+			{ name: "Tailwind CSS" },
+			{ name: "Supabase" },
+			{ name: "OpenAi" },
+			{ name: "Google Gemini" },
+			{ name: "Perplexity AI Patent Search" },
+		],
+		image: "/assets/projects/p7.png",
+		live: "https://patentprotector.ai",
+		github: "",
+	},
+	{
+		num: "07",
+		category: "MCP Server",
+		title: "Deno MCP Server",
+		description:
+			"A comprehensive MCP server for Deno development tools. Provides secure access to the complete Deno CLI toolchain including execution, testing, formatting, linting, compilation, and deployment capabilities through the Model Context Protocol.",
+		stack: [
+			{ name: "deno" },
+			{ name: "mcp" },
+			{ name: "model-context-protocol" },
+			{ name: "typescript" },
+			{ name: "development-tools" },
+			{ name: "cli" },
+			{ name: "automation" },
+			{ name: "developer-experience" },
+			{ name: "toolchain" },
+			{ name: "runtime" },
+		],
+		image: "/assets/projects/p8.png",
+		live: "https://deno.mcp.sudeeptasarkar.in",
+		github: "https://github.com/sudsarkar13/deno-mcp",
+	},
 ];
 
 const WorkPage: React.FC = () => {

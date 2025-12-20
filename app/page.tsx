@@ -36,7 +36,7 @@ const Home: React.FC = () => {
 							<span className={`text-accent`}>Sudeepta Sarkar</span>
 						</h1>
 						<p className={`max-w-[500px] mb-9 text-white/80`}>
-							I'm a Frontend Web Developer, Tech Specialist Intern at Lex
+							I'm a Frontend Web Developer, Software Developer at Lex
 							Protector LLP, and Former CTO at Dr. Reach - Healthunity Solutions
 							Pvt Ltd. I have experience in building web applications using
 							React, Next.js, and Tailwind CSS.{" "}
